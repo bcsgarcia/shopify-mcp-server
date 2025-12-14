@@ -79,6 +79,14 @@ PORT=3000
 SHOPIFY_STORE_URL=https://your-store.myshopify.com
 SHOPIFY_ACCESS_TOKEN=shpat_your_admin_access_token
 SHOPIFY_API_VERSION=2024-10
+MCP_API_KEY=your_secure_api_key_here
+```
+
+### Authentication
+All API endpoints (except `/health` and `/`) require an API Key.
+Add the `x-api-key` header to your requests:
+```
+x-api-key: your_secure_api_key_here
 ```
 
 ### Local Development
@@ -101,4 +109,3 @@ npm run dev
    ```
 
 On Coolify, simply point to this repository (or upload the code) and set the environment variables in the Coolify dashboard.
-#

@@ -13,6 +13,23 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Authentication Middleware
+const authenticateRequest = (req: Request, res: Response, next: any) => {
+    const apiKey = req.headers['x-api-key'];
+    const configuredKey = process.env.MCP_API_KEY;
+
+    if (!configuredKey) {
+        console.warn('MCP_API_KEY is not set in environment variables. Authentication disabled (NOT RECOMMENDED).');
+        return next();
+    }
+
+    if (!apiKey || apiKey !== configuredKey) {
+        return res.status(401).json({ error: 'Unauthorized: Invalid or missing API Key' });
+    }
+
+    next();
+};
+
 // Logging middleware
 app.use((req, res, next) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
@@ -39,7 +56,7 @@ app.get('/', (req, res) => {
 });
 
 // Endpoint: Build Query
-app.post('/api/build-query', (req: Request<{}, {}, BuildQueryRequest>, res: Response) => {
+app.post('/api/build-query', authenticateRequest, (req: Request<{}, {}, BuildQueryRequest>, res: Response) => {
     try {
         const { resource, filters, limit } = req.body;
 
@@ -66,7 +83,7 @@ app.post('/api/build-query', (req: Request<{}, {}, BuildQueryRequest>, res: Resp
 });
 
 // Endpoint: Execute Query
-app.post('/api/execute-query', async (req: Request<{}, {}, ExecuteQueryRequest>, res: Response) => {
+app.post('/api/execute-query', authenticateRequest, async (req: Request<{}, {}, ExecuteQueryRequest>, res: Response) => {
     try {
         const { query, variables } = req.body;
         if (!query) {
@@ -81,7 +98,7 @@ app.post('/api/execute-query', async (req: Request<{}, {}, ExecuteQueryRequest>,
 });
 
 // Endpoint: Search Products (Shortcut)
-app.post('/api/products/search', async (req: Request<{}, {}, { filters: ProductFilters; limit?: number }>, res: Response) => {
+app.post('/api/products/search', authenticateRequest, async (req: Request<{}, {}, { filters: ProductFilters; limit?: number }>, res: Response) => {
     try {
         const { filters, limit } = req.body;
         if (!filters) {
@@ -100,7 +117,7 @@ app.post('/api/products/search', async (req: Request<{}, {}, { filters: ProductF
 });
 
 // Endpoint: Search Orders (Shortcut)
-app.post('/api/orders/search', async (req: Request, res: Response) => {
+app.post('/api/orders/search', authenticateRequest, async (req: Request, res: Response) => {
     // Placeholder for orders search
     try {
         const { query: searchString, limit } = req.body; // Expecting raw query string for orders for now or simple filters
