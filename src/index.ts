@@ -24,25 +24,26 @@ const authenticateRequest = (req: Request, res: Response, next: any) => {
     }
 
     if (!apiKey || apiKey !== configuredKey) {
-        return res.status(401).json({ error: 'Unauthorized: Invalid or missing API Key' });
+        res.status(401).json({ error: 'Unauthorized: Invalid or missing API Key' });
+        return;
     }
 
     next();
 };
 
 // Logging middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: any) => {
     console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
     next();
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
     res.status(200).json({ status: 'ok' });
 });
 
 // Documentation
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
     res.send(`
     <h1>Shopify MCP Server</h1>
     <p>Endpoints:</p>
@@ -61,7 +62,8 @@ app.post('/api/build-query', authenticateRequest, (req: Request<{}, {}, BuildQue
         const { resource, filters, limit } = req.body;
 
         if (!resource || !filters) {
-            return res.status(400).json({ error: 'Missing resource or filters' });
+            res.status(400).json({ error: 'Missing resource or filters' });
+            return;
         }
 
         let searchString = '';
@@ -87,7 +89,8 @@ app.post('/api/execute-query', authenticateRequest, async (req: Request<{}, {}, 
     try {
         const { query, variables } = req.body;
         if (!query) {
-            return res.status(400).json({ error: 'Missing query' });
+            res.status(400).json({ error: 'Missing query' });
+            return;
         }
 
         const result = await executeShopifyQuery(query, variables);
@@ -102,7 +105,8 @@ app.post('/api/products/search', authenticateRequest, async (req: Request<{}, {}
     try {
         const { filters, limit } = req.body;
         if (!filters) {
-            return res.status(400).json({ error: 'Missing filters' });
+            res.status(400).json({ error: 'Missing filters' });
+            return;
         }
 
         const searchString = buildProductQuery(filters);
