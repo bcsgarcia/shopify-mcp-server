@@ -102,11 +102,12 @@ query SearchOrders($query: String!, $first: Int!) {
       node {
         id
         name
-        email
         customer {
           firstName
           lastName
           displayName
+          email
+          phone
         }
         createdAt
         totalPriceSet {
