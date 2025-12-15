@@ -7,8 +7,11 @@ export function buildProductQuery(filters: ProductFilters): string {
     parts.push(`title:*${filters.title}*`);
   }
 
+  // Default to 'active' status unless specifically overridden
   if (filters.status) {
     parts.push(`status:${filters.status}`);
+  } else {
+    parts.push('status:active');
   }
 
   if (filters.vendor) {
@@ -100,6 +103,11 @@ query SearchOrders($query: String!, $first: Int!) {
         id
         name
         email
+        customer {
+          firstName
+          lastName
+          displayName
+        }
         createdAt
         totalPriceSet {
           shopMoney {
