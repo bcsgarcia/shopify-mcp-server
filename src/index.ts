@@ -76,7 +76,10 @@ app.post('/api/build-query', authenticateRequest, (req: Request<{}, {}, BuildQue
         }
 
         const query = generateGraphQLQuery(resource, limit || 50);
-        const variables = { query: searchString };
+        const variables = {
+            query: searchString,
+            first: limit || 50
+        };
 
         res.json({ query, variables });
     } catch (error: any) {
@@ -111,7 +114,10 @@ app.post('/api/products/search', authenticateRequest, async (req: Request<{}, {}
 
         const searchString = buildProductQuery(filters);
         const query = generateGraphQLQuery('products', limit || 50);
-        const variables = { query: searchString };
+        const variables = {
+            query: searchString,
+            first: limit || 50
+        };
 
         const result = await executeShopifyQuery(query, variables);
         res.json(result);
@@ -128,7 +134,10 @@ app.post('/api/orders/search', authenticateRequest, async (req: Request, res: Re
         // For simplicity in this MVP, let's assume orders/search receives a raw query string or we can implement a builder later
 
         const gqlQuery = generateGraphQLQuery('orders', limit || 50);
-        const variables = { query: searchString || "status:open" }; // Default to open orders
+        const variables = {
+            query: searchString || "status:open",
+            first: limit || 50
+        };
 
         const result = await executeShopifyQuery(gqlQuery, variables);
         res.json(result);
