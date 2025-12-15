@@ -114,5 +114,5 @@ query SearchOrders($query: String!, $first: Int!) {
     `.trim();
     }
 
-    throw new Error(\`Unsupported resource: \${resource}\`);
+    throw new Error(`Unsupported resource: ${resource}`);
 }
